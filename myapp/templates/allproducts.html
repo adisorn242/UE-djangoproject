@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Products</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons (ใช้ไอคอน info-circle ในการ์ด) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: #f8f9fa;
+      padding: 40px 20px;
+    }
+    .card {
+      border: none;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    .card-img-top {
+      height: 250px;
+      object-fit: cover;
+    }
+    h1 {
+      font-weight: 700;
+      margin-bottom: 40px;
+      color: #2c3e50;
+    }
+    .badge-custom {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 50px;
+      padding: 8px 15px;
+      font-size: 0.85rem;
+    }
+    .search-box {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      margin-bottom: 40px;
+    }
+    .search-box input {
+      border-radius: 50px;
+      padding: 12px 20px;
+      font-size: 1rem;
+    }
+    .filter-btn {
+      border-radius: 50px;
+      padding: 8px 20px;
+      margin: 4px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-color: transparent;
+    }
+    .no-result {
+      display: none;
+      text-align: center;
+      padding: 60px;
+      color: #aaa;
+    }
+    .price-tag {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #198754;
+    }
+    .stock-badge {
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}">🛒 MyShop</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">หน้าแรก</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'all-products' %}">สินค้าทั้งหมด</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">เกี่ยวกับเรา</a></li>
+      </ul>
+      <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">👤 {{ user.username }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">ออกจากระบบ</a></li>
+        {% else %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">เข้าสู่ระบบ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">สมัครสมาชิก</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+<div class="container">
+    <h1 class="text-center">🛒 รายการสินค้าทั้งหมด</h1>
+
+    <!-- ===== ค้นหา + กรองตามหมวดหมู่ =====
+         หมวดหมู่ (categories) ดึงมาจากฐานข้อมูลจริงผ่าน view (AllProducts)
+         ไม่ hardcode ปุ่มแบบไฟล์ static mockup เดิมแล้ว -->
+    <div class="search-box">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-6">
+                <input type="text" id="searchInput" class="form-control" placeholder="🔍 ค้นหาสินค้า...">
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button class="btn btn-outline-secondary filter-btn active" data-category="all" onclick="filterCategory('all', this)">ทั้งหมด</button>
+                {% for c in categories %}
+                <button class="btn btn-outline-secondary filter-btn" data-category="{{ c.id }}" onclick="filterCategory('{{ c.id }}', this)">{{ c.name }}</button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="no-result" id="noResult">
+        <h3>😢 ไม่พบสินค้าที่ค้นหา</h3>
+        <p>ลองค้นหาด้วยคำอื่นดูครับ</p>
+    </div>
+
+    <div class="row mt-4" id="productGrid">
+        {% for p in products %}
+        <div class="col-md-4 product-card"
+             data-name="{{ p.title|lower }} {{ p.detail|lower }}"
+             data-category="{% if p.category %}{{ p.category.id }}{% else %}none{% endif %}">
+            <div class="card">
+                {% if p.image %}
+                    <img src="{{ p.image.url }}" class="card-img-top" alt="{{ p.title }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/400x300?text=No+Image" class="card-img-top" alt="No Image">
+                {% endif %}
+                <div class="card-body text-center p-4">
+                    {% if p.category %}
+                        <span class="badge badge-custom text-white mb-2">{{ p.category.name }}</span>
+                    {% endif %}
+                    <h4 class="card-title fw-bold mb-3">{{ p.title }}</h4>
+                    <p class="card-text text-muted mb-2">{{ p.detail|truncatechars:80 }}</p>
+
+                    {% if p.others %}
+                    <p class="mb-2 text-secondary"><small><i class="bi bi-info-circle"></i> {{ p.others }}</small></p>
+                    {% endif %}
+
+                    {% if p.price %}
+                    <p class="price-tag mb-1">฿ {{ p.price }}</p>
+                    {% endif %}
+
+                    {% if p.stock is not None %}
+                        {% if p.is_available and p.stock > 0 %}
+                        <span class="badge bg-success stock-badge">คงเหลือ {{ p.stock }} {{ p.unit }}</span>
+                        {% else %}
+                        <span class="badge bg-danger stock-badge">สินค้าหมด</span>
+                        {% endif %}
+                    {% endif %}
+
+                    <a href="{% url 'product-detail' p.id %}" class="btn btn-primary w-100 mt-3 rounded-pill" style="background: linear-gradient(135deg, #667eea, #764ba2); border: none;">ดูรายละเอียด</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center mt-5">
+            <h4 class="text-muted">ยังไม่มีสินค้าในระบบ</h4>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ค้นหา/กรองฝั่ง client (ไม่ reload หน้า) เหมือนไฟล์ test-all-product.html เดิม
+    // ต่างกันตรงที่ข้อมูลตอนนี้มาจาก Product จริงในฐานข้อมูล ผ่าน Django template loop ด้านบน
+    let currentCategory = 'all';
+    let currentSearch = '';
+
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            currentSearch = this.value.toLowerCase();
+            applyFilter();
+        });
+    }
+
+    function filterCategory(category, btn) {
+        currentCategory = category;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilter();
+    }
+
+    function applyFilter() {
+        const cards = document.querySelectorAll('.product-card');
+        let visibleCount = 0;
+
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name');
+            const category = card.getAttribute('data-category');
+
+            const matchSearch = name.includes(currentSearch);
+            const matchCategory = currentCategory === 'all' || category === currentCategory;
+
+            if (matchSearch && matchCategory) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        const noResult = document.getElementById('noResult');
+        if (noResult) {
+            noResult.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+    }
+</script>
+
+</body>
+</html>

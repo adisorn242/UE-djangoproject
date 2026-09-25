@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ product.title }}</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: #f8f9fa;
+      padding: 40px 20px;
+    }
+    .product-img {
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      width: 100%;
+      max-height: 500px;
+      object-fit: cover;
+    }
+    .detail-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      height: 100%;
+    }
+    h1 {
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    .btn-back {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 50px;
+      padding: 10px 30px;
+      color: white;
+      transition: 0.3s;
+    }
+    .btn-back:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}">🛒 MyShop</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">หน้าแรก</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'all-products' %}">สินค้าทั้งหมด</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">เกี่ยวกับเรา</a></li>
+      </ul>
+      <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">👤 {{ user.username }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">ออกจากระบบ</a></li>
+        {% else %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">เข้าสู่ระบบ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">สมัครสมาชิก</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+<div class="container">
+    <div class="mb-4">
+        <a href="{% url 'all-products' %}" class="btn btn-back"><i class="bi bi-arrow-left"></i> กลับไปหน้าสินค้าทั้งหมด</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="product-img" alt="{{ product.title }}">
+            {% else %}
+                <img src="https://via.placeholder.com/800x600?text=No+Image" class="product-img" alt="No Image">
+            {% endif %}
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="detail-card">
+                <h1>{{ product.title }}</h1>
+
+                {% if product.category %}
+                <span class="badge mb-3" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 8px 15px; border-radius: 50px;">{{ product.category.name }}</span>
+                {% endif %}
+
+                {% if product.price %}
+                <p class="fs-3 fw-bold text-success mb-2">฿ {{ product.price }}</p>
+                {% endif %}
+
+                {% if product.stock is not None %}
+                    {% if product.is_available and product.stock > 0 %}
+                    <span class="badge bg-success mb-3">คงเหลือ {{ product.stock }} {{ product.unit }}</span>
+                    {% else %}
+                    <span class="badge bg-danger mb-3">สินค้าหมด</span>
+                    {% endif %}
+                {% endif %}
+
+                <hr>
+                <h5 class="fw-bold mt-4">รายละเอียดสินค้า</h5>
+                <p class="text-muted" style="line-height: 1.8;">{{ product.detail|linebreaks }}</p>
+                
+                {% if product.others %}
+                <div class="alert alert-secondary mt-4 rounded-4">
+                    <strong><i class="bi bi-info-circle"></i> ข้อมูลเพิ่มเติม:</strong>
+                    <p class="mb-0 mt-2">{{ product.others }}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

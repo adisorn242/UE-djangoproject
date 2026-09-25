@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - MyShop</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #56ab2f, #a8e063);
+      color: white;
+      padding: 100px 20px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
+    }
+
+    .section {
+      padding: 60px 20px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .icon {
+      font-size: 40px;
+    }
+
+    footer {
+      background: #198754;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{% url 'home' %}">🛒 MyShop</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">หน้าแรก</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'all-products' %}">สินค้าทั้งหมด</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">เกี่ยวกับเรา</a></li>
+      </ul>
+      <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">👤 {{ user.username }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">ออกจากระบบ</a></li>
+        {% else %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">เข้าสู่ระบบ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">สมัครสมาชิก</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>เกี่ยวกับเรา 🛒</h1>
+    <p>MyShop ร้านอุปกรณ์คอมพิวเตอร์และไอที คัดสรรคุณภาพ ส่งตรงถึงมือคุณ</p>
+  </section>
+
+  <!-- About -->
+  <section class="section container text-center">
+    <h2 class="mb-4">เราเป็นใคร?</h2>
+    <p class="lead">
+      MyShop คือร้านจำหน่ายอุปกรณ์คอมพิวเตอร์และไอทีครบวงจร
+      ไม่ว่าจะเป็นคีย์บอร์ด เมาส์ จอมอนิเตอร์ หรืออุปกรณ์เสริมอื่นๆ
+      เราคัดสรรสินค้าคุณภาพในราคาที่เข้าถึงได้ เพื่อให้ทุกคนได้ใช้อุปกรณ์ที่ดีที่สุดในการทำงานและเล่นเกม
+    </p>
+  </section>
+
+  <!-- Features -->
+  <section class="section bg-light">
+    <div class="container">
+      <div class="row text-center">
+
+        <div class="col-md-4 mb-4">
+          <div class="card p-4">
+            <div class="icon">⌨️</div>
+            <h5 class="mt-3">สินค้าคุณภาพ</h5>
+            <p>คัดสรรอุปกรณ์คอมพิวเตอร์แท้ คุณภาพดี</p>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card p-4">
+            <div class="icon">🚚</div>
+            <h5 class="mt-3">จัดส่งรวดเร็ว</h5>
+            <p>บริการส่งถึงบ้านภายในวันเดียว</p>
+          </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <div class="card p-4">
+            <div class="icon">🛡️</div>
+            <h5 class="mt-3">รับประกันสินค้า</h5>
+            <p>มั่นใจได้ สินค้าทุกชิ้นมีการรับประกัน</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Story -->
+  <section class="section container text-center">
+    <h2 class="mb-4">เรื่องราวของเรา</h2>
+    <p>
+      จากร้านอุปกรณ์คอมพิวเตอร์เล็กๆ สู่ร้านค้าออนไลน์
+      เราเริ่มต้นจากความตั้งใจอยากให้ทุกคนเข้าถึงอุปกรณ์ไอทีดีๆ ในราคาที่เป็นธรรม
+      และยังคงยึดมั่นในคุณภาพและความซื่อสัตย์เสมอมา
+    </p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 MyShop | อุปกรณ์คอมพิวเตอร์และไอที 🛒</p>
+  </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
